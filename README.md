@@ -1,7 +1,7 @@
 # Crypto Discord Bot
 
 
-## This bot is written in Python and uses many modules including Discord, Matplotlib, Pandas, Pycoingecko API, and many more.
+## This bot is written in Python and uses many modules including Discord, Matplotlib, Pandas, Pycoingecko API, and many more. Inspired by: <a href='https://github.com/ImKelp/Simple-Crypto-Dicord-Bot'>ImKelp/Simple-Crypto-Dicord-Bot</a>
 
 
 ### This project was made to provide usefulness to myself with up-to-date information about cryptocurrencies on Discord. This Python bot uses the pycoingecko API and retrieves and displays current data of the top 10 cryptocurrencies on Discord. Here are some key features this bot can do.
