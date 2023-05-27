@@ -7,6 +7,7 @@ import asyncio
 from pycoingecko import CoinGeckoAPI
 from discord_bot_utils import get_eth_price, get_graph
 
+CRYPTOLIST = 10
 
 # pycoingecko startup
 cg = CoinGeckoAPI()
@@ -56,7 +57,7 @@ Use !help for help with commands.''')
 
     # Makes a list of the top 10 coins and shows commands to check
     if message.content.startswith('!list'):
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=10)
+        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
         count = 1
 
         embed=discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
@@ -90,7 +91,7 @@ Use !help for help with commands.''')
         except:
             await message.channel.send('Use "!swap # coin1_name coin2_name" for this command')
 
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=10)
+        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
 
         coin_names = list()
         for coin in crypto_list:
@@ -147,7 +148,7 @@ Use !help for help with commands.''')
         except:
             await message.channel.send('Use "!chart coin_name" for this command.')
 
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=10)
+        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
 
         coin_names = list()
         for coin in crypto_list:
@@ -197,7 +198,7 @@ Use !help for help with commands.''')
 
 
         # Sets image from get_graph into embed.set_image
-        file = discord.File(r"D:\CS\Python\projects\discord_bot\img\chart.png", filename="chart.png")
+        file = discord.File(r"D:\CS\Python\projects\GOCrypto-Discord-Bot\img\chart.png", filename="chart.png")
         embed.set_image(url="attachment://chart.png")
 
         embed.set_footer(text=f'{client.user.name} data by CoinGecko')

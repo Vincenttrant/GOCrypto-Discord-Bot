@@ -34,7 +34,7 @@ def get_graph(token):
     plt.xticks([])
     
     # Sets chart into 'filename' and used later
-    filename = r"D:\CS\Python\projects\discord_bot\img\chart.png"
+    filename = r"D:\CS\Python\projects\GOCrypto-Discord-Bot\img\chart.png"
     plt.savefig(filename)
 
     plt.close()
