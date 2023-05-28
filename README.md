@@ -4,7 +4,7 @@
 ## This bot is written in Python and uses many modules including Discord, Matplotlib, Pandas, Pycoingecko API, and many more. Inspired by: <a href='https://github.com/ImKelp/Simple-Crypto-Dicord-Bot'>ImKelp/Simple-Crypto-Dicord-Bot</a>
 
 
-### This project was made to provide usefulness to myself with up-to-date information about cryptocurrencies on Discord. This Python bot uses the pycoingecko API and retrieves and displays current data of the top 10 cryptocurrencies on Discord. Here are some key features this bot can do.
+## This project was made to provide usefulness to myself with up-to-date information about cryptocurrencies on Discord. This Python bot uses the pycoingecko API and retrieves and displays current data of the top 10 cryptocurrencies on Discord. Here are some key features this bot can do.
 <hr>
 
 
@@ -15,18 +15,23 @@
 
 
 
-# Commands
+## Commands
+<hr>
+
 * **!help** - Explains what commands are used and an explanation of each command.
 * **!about** - About this bot and what it does.
 * **!list** -  Shows the top 10 valid cryptocurrencies.
 * **!swap** - shows price conversion of a given price of a coin to another. Ex: "!swap 5.6 ethereum bitcoin"
-* **!chart** "coin_name" - Displays current data and chart. Ex: "!chart Ethereum"
+* **!chart** - Displays current data and chart. Ex: "!chart Ethereum"
 
-# Visual
-![!chart](https://www.simpleimageresizer.com/_uploads/photos/c585a264/chart_1_400x400.png)
-![!swap](https://www.simpleimageresizer.com/_uploads/photos/c585a264/swap_1_400x400.png)
+## Visual
+<hr>
 
-# Issues
+![!chart](img\chart_500x500.png)
+![!swap](img\swap_500x500.png)
+
+## Issues
+<hr>
 
 ### Spamming commands could lead to Pycoingecko API freezing the bot. There is no current fix, but short-term reset the bot and reload after a couple of minutes. 
 
