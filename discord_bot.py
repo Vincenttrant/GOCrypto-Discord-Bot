@@ -2,8 +2,8 @@ import discord
 import requests
 import json
 import os
-from dotenv import load_dotenv
 import asyncio
+from dotenv import load_dotenv
 from pycoingecko import CoinGeckoAPI
 from discord_bot_utils import get_eth_price, get_graph
 
@@ -27,12 +27,14 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
+
 async def update_crypto_list():
-    global crypto_list
+    crypto_list
     
     while True:
         crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
         await asyncio.sleep(600)  # Update every 10 minutes
+
 
 async def update_eth_price():
     await client.wait_until_ready()
@@ -43,7 +45,7 @@ async def update_eth_price():
 
     
 # Next and Previous buttons for !list
-class Menu(discord.ui.View):
+class List_menu(discord.ui.View):
     def __init__(self, start_index=10):
         super().__init__()
         self.start_index = start_index
@@ -52,7 +54,7 @@ class Menu(discord.ui.View):
     async def menu1(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
 
-        # Moving back 10 coins
+        # Moves back 10 coins
         if self.start_index > 0:
             self.start_index -= 10
 
@@ -102,7 +104,12 @@ class Menu(discord.ui.View):
 
         await interaction.response.edit_message(embed=embed)
 
-    
+
+class Swap_menu(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        
+
 
 @client.event
 async def on_ready():
@@ -112,16 +119,18 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    global crypto_list
+    crypto_list
 
     if message.author == client.user:
         return
     
+
     if message.content.startswith('!help'):
         await message.channel.send(
 '''!chart "coin_name" shows current price and more about that coin.
 !list shows the top 10 coins.
 !swap "# coin1_name coin2_name shows the price conversion between the two coins''')
+
 
     if message.content.startswith('!about'):
         await message.channel.send('''
@@ -130,7 +139,7 @@ Use !help for help with commands.''')
 
     # Makes a list of the top 100 coins
     if message.content.startswith('!list'):
-        view = Menu()
+        view = List_menu()
 
         embed=discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
         embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
@@ -149,7 +158,9 @@ Use !help for help with commands.''')
 
         await message.channel.send(view=view, embed=embed)
 
+
     if message.content.startswith('!swap'):
+        view = Swap_menu()
 
         # Checks if command is correctly formated
         try:
@@ -201,7 +212,9 @@ Use !help for help with commands.''')
 
         embed.set_footer(text=f'{client.user.name} data by CoinGecko')
 
-        await message.channel.send(embed=embed)
+
+        view.add_item(discord.ui.Button(label='Swap', style=discord.ButtonStyle.link, url='https://app.uniswap.org/#/swap'))
+        await message.channel.send(view=view, embed=embed)
 
 
     # Shows all data of that coin including chart
