@@ -15,7 +15,7 @@ def unix_to_date(unix_time):
     return f"{timestamp.strftime('%d-%m-%Y %H:%M:%S')}"
 
 
-def get_graph(token):
+def get_graph(token, coin_percentage):
 
     # coin_graph gives list of [unix timestamp, price]
     coin_graph = cg.get_coin_market_chart_by_id(id=f'{token}', vs_currency='usd', days='7')
@@ -24,17 +24,23 @@ def get_graph(token):
     for each in coin_graph['prices']:
         date = unix_to_date(each[0])
         new_data[date] = each[1]
-        
+
+    color = None
+    if coin_percentage >= 0:
+        color = 'green'
+    else:
+        color = 'red'
+
     # sets dictionary dates and prices into df.
     df = pd.DataFrame({'Dates': new_data.keys(), 'Prices': new_data.values()})
     
-    df.plot(x='Dates', y='Prices', kind='line', legend=None, color="black", xlabel="Date", ylabel="Price")	
+    df.plot(x='Dates', y='Prices', kind='line', legend=None, color=f"{color}", xlabel="Date", ylabel="Price")	
     plt.title(f'Last 7 days of {token}', fontsize=14, color='black', fontweight='bold')
 
     plt.xticks([])
     
     # Sets chart into 'filename' and used later
-    filename = r"D:\CS\Python\projects\GOCrypto-Discord-Bot\img\chart.png"
+    filename = r"D:\CS\Python\projects\Crypto-Discord-Bot\img\chart.png"
     plt.savefig(filename)
 
     plt.close()

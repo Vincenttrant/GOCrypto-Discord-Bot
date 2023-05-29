@@ -7,10 +7,13 @@ import asyncio
 from pycoingecko import CoinGeckoAPI
 from discord_bot_utils import get_eth_price, get_graph
 
-CRYPTOLIST = 10
+
 
 # pycoingecko startup
 cg = CoinGeckoAPI()
+
+CRYPTOLIST = 100
+crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
 
 # Checks coin gecko server status
 response = requests.get('https://api.coingecko.com/api/v3/ping')
@@ -24,12 +27,81 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
+async def update_crypto_list():
+    global crypto_list
+    
+    while True:
+        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
+        await asyncio.sleep(600)  # Update every 10 minutes
+
 async def update_eth_price():
     await client.wait_until_ready()
     while not client.is_closed():
         eth_price = get_eth_price()
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Ethereum: ${eth_price:.2f}"))
         await asyncio.sleep(60)  # Updates every minute
+
+    
+# Next and Previous buttons for !list
+class Menu(discord.ui.View):
+    def __init__(self, start_index=10):
+        super().__init__()
+        self.start_index = start_index
+
+    @discord.ui.button(label="Previous", style=discord.ButtonStyle.red)
+    async def menu1(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
+
+        # Moving back 10 coins
+        if self.start_index > 0:
+            self.start_index -= 10
+
+        start = self.start_index
+        end = self.start_index + 10
+
+        embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
+        embed.set_thumbnail(url='https://play-lh.googleusercontent.com/CcboHyK1Id9XQWa8HXb_81Rvgqy7J816OHiTcGlezcwC-tx4cnrrXPx1x6cR0PowqA')
+
+        for i in range(start, end):
+            coin_id = crypto_list[i]['id']
+            coin_name = crypto_list[i]['name']
+            coin_symbol = crypto_list[i]['symbol']
+
+            embed.add_field(name=f'{i + 1}. {coin_name} - ${coin_symbol}', value=f'!chart {coin_id}', inline=False)
+
+        embed.set_footer(text=f'{client.user.name} data by CoinGecko')
+
+        await interaction.response.edit_message(embed=embed)
+
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.green)
+    async def menu2(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
+
+        # Moves forward 10 coins
+        start = self.start_index
+        end = self.start_index + 10
+
+        if end >= CRYPTOLIST:
+            end = CRYPTOLIST
+
+        embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
+        embed.set_thumbnail(url='https://play-lh.googleusercontent.com/CcboHyK1Id9XQWa8HXb_81Rvgqy7J816OHiTcGlezcwC-tx4cnrrXPx1x6cR0PowqA')
+
+        print(start, end)
+        for i in range(start, end):
+            coin_id = crypto_list[i]['id']
+            coin_name = crypto_list[i]['name']
+            coin_symbol = crypto_list[i]['symbol']
+
+            embed.add_field(name=f'{i + 1}. {coin_name} - ${coin_symbol}', value=f'!chart {coin_id}', inline=False)
+
+        embed.set_footer(text=f'{client.user.name} data by CoinGecko')
+
+        if end < CRYPTOLIST:
+            self.start_index += 10
+
+        await interaction.response.edit_message(embed=embed)
+
     
 
 @client.event
@@ -38,9 +110,10 @@ async def on_ready():
     client.loop.create_task(update_eth_price())
 
 
-
 @client.event
 async def on_message(message):
+    global crypto_list
+
     if message.author == client.user:
         return
     
@@ -55,29 +128,26 @@ async def on_message(message):
 GOCrypto is a discord bot that shows current data of the top 10 cryptocurrecny.
 Use !help for help with commands.''')
 
-    # Makes a list of the top 10 coins and shows commands to check
+    # Makes a list of the top 100 coins
     if message.content.startswith('!list'):
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
-        count = 1
+        view = Menu()
 
         embed=discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
-
         embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
-
         embed.set_thumbnail(url='https://play-lh.googleusercontent.com/CcboHyK1Id9XQWa8HXb_81Rvgqy7J816OHiTcGlezcwC-tx4cnrrXPx1x6cR0PowqA')
 
-        for coin in crypto_list:
-            coin_id = coin['id']
-            coin_name = coin['name']
-            coin_symbol = coin['symbol'].upper()
 
-            embed.add_field(name=f'{count}. {coin_name} - ${coin_symbol}', value=f'!chart {coin_id}', inline=False)
-            
-            count = count + 1
+        # Prints top 10 intial coins
+        for i in range(10):
+            coin_id = crypto_list[i]['id']
+            coin_name = crypto_list[i]['name']
+            coin_symbol = crypto_list[i]['symbol']
+
+            embed.add_field(name=f'{i + 1}. {coin_name} - ${coin_symbol}', value=f'!chart {coin_id}', inline=False)
 
         embed.set_footer(text=f'{client.user.name} data by CoinGecko')
 
-        await message.channel.send(embed=embed)
+        await message.channel.send(view=view, embed=embed)
 
     if message.content.startswith('!swap'):
 
@@ -90,8 +160,6 @@ Use !help for help with commands.''')
 
         except:
             await message.channel.send('Use "!swap # coin1_name coin2_name" for this command')
-
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
 
         coin_names = list()
         for coin in crypto_list:
@@ -120,10 +188,9 @@ Use !help for help with commands.''')
 
 
         embed = discord.Embed(title=f'{coin1_symbol} --> {coin2_symbol}', color=discord.Colour.og_blurple())
-
         embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
-        
         embed.set_thumbnail(url=f'https://seeklogo.com/images/U/uniswap-logo-782F5E6363-seeklogo.com.png')
+
         embed.add_field(name=f'{coin1_amount:.6f}', value=f'${coin1_usdc:,.2f}', inline=True)
         embed.add_field(name=f'{coin1_symbol}',value=f'${(coin1_usdc / coin1_amount):,.2f}', inline=True)
 
@@ -148,7 +215,6 @@ Use !help for help with commands.''')
         except:
             await message.channel.send('Use "!chart coin_name" for this command.')
 
-        crypto_list = cg.get_coins_markets(vs_currency='usd', per_page=CRYPTOLIST)
 
         coin_names = list()
         for coin in crypto_list:
@@ -166,7 +232,6 @@ Use !help for help with commands.''')
         coin_data = cg.get_coin_by_id(coin_id, localization=False, tickers=False)
 
 
-
         coin_symbol = coin_data['symbol'].upper()
         coin_image_url = coin_data['image']['large']
 
@@ -178,14 +243,11 @@ Use !help for help with commands.''')
         coin_volume = prices[coin_id]['usd_24h_vol']
         coin_mc = prices[coin_id]['usd_market_cap']
 
-        get_graph(coin_id)
-
+        get_graph(coin_id, coin_7_day)
 
 
         embed = discord.Embed(title=f'${coin_symbol}', color=discord.Colour.og_blurple())
-
         embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
-        
         embed.set_thumbnail(url=f'{coin_image_url}')
         
         embed.add_field(name='Current Price', value=f'${coin_current_price:,}', inline=True)
@@ -198,7 +260,7 @@ Use !help for help with commands.''')
 
 
         # Sets image from get_graph into embed.set_image
-        file = discord.File(r"D:\CS\Python\projects\GOCrypto-Discord-Bot\img\chart.png", filename="chart.png")
+        file = discord.File(r"D:\CS\Python\projects\Crypto-Discord-Bot\img\chart.png", filename="chart.png")
         embed.set_image(url="attachment://chart.png")
 
         embed.set_footer(text=f'{client.user.name} data by CoinGecko')

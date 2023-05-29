@@ -4,7 +4,7 @@
 ## This bot is written in Python and uses many modules including Discord, Matplotlib, Pandas, Pycoingecko API, and many more. Inspired by: <a href='https://github.com/ImKelp/Simple-Crypto-Dicord-Bot'>ImKelp/Simple-Crypto-Dicord-Bot</a>
 
 
-## This project was made to provide usefulness to myself with up-to-date information about cryptocurrencies on Discord. This Python bot uses the pycoingecko API and retrieves and displays current data of the top 10 cryptocurrencies on Discord. Here are some key features this bot can do.
+## This project was made to provide usefulness to myself with up-to-date information about cryptocurrencies on Discord. This Python bot uses the pycoingecko API and retrieves and displays current data of the top 100 cryptocurrencies on Discord. Here are some key features this bot can do.
 <hr>
 
 
@@ -20,15 +20,15 @@
 
 * **!help** - Explains what commands are used and an explanation of each command.
 * **!about** - About this bot and what it does.
-* **!list** -  Shows the top 10 valid cryptocurrencies.
+* **!list** -  Shows the top 100 valid cryptocurrencies.
 * **!swap** - shows price conversion of a given price of a coin to another. Ex: "!swap 5.6 ethereum bitcoin"
 * **!chart** - Displays current data and chart. Ex: "!chart Ethereum"
 
 ## Visual
 <hr>
 
-![!chart](img\chart_500x500.png)
-![!swap](img\swap_500x500.png)
+![!chart](https://gyazo.com/b05fd835151ff292a6aa55c65e91b1ca)
+![!swap](https://gyazo.com/08ad558c6151ea81f9d84b3fa11f5912)
 
 ## Issues
 <hr>
