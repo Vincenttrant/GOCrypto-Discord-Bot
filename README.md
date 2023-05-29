@@ -27,8 +27,8 @@
 ## Visual
 <hr>
 
-![!chart](https://gyazo.com/b05fd835151ff292a6aa55c65e91b1ca)
-![!swap](https://gyazo.com/08ad558c6151ea81f9d84b3fa11f5912)
+![!chart](https://i.gyazo.com/b05fd835151ff292a6aa55c65e91b1ca.png)
+![!swap](https://i.gyazo.com/b05fd835151ff292a6aa55c65e91b1ca.png)
 
 ## Issues
 <hr>
