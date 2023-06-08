@@ -5,7 +5,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from pycoingecko import CoinGeckoAPI
-from discord_bot_utils import get_eth_price, get_graph
+from discord_bot_utils import get_eth_price, get_graph, get_candle
 
 
 
@@ -40,7 +40,7 @@ async def update_eth_price():
     await client.wait_until_ready()
     while not client.is_closed():
         eth_price = get_eth_price()
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Ethereum: ${eth_price:.2f}"))
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'Ethereum: ${eth_price:.2f}'))
         await asyncio.sleep(60)  # Updates every minute
 
     
@@ -50,7 +50,7 @@ class List_menu(discord.ui.View):
         super().__init__()
         self.start_index = start_index
 
-    @discord.ui.button(label="Previous", style=discord.ButtonStyle.red)
+    @discord.ui.button(label='Previous', style=discord.ButtonStyle.red)
     async def menu1(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
 
@@ -75,7 +75,7 @@ class List_menu(discord.ui.View):
 
         await interaction.response.edit_message(embed=embed)
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.green)
+    @discord.ui.button(label='Next', style=discord.ButtonStyle.green)
     async def menu2(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(title='List of Valid Coins Names', color=discord.Colour.og_blurple())
 
@@ -273,12 +273,55 @@ Use !help for help with commands.''')
 
 
         # Sets image from get_graph into embed.set_image
-        file = discord.File(r"D:\CS\Python\projects\Crypto-Discord-Bot\img\chart.png", filename="chart.png")
-        embed.set_image(url="attachment://chart.png")
+        file = discord.File(r'D:\CS\Python\projects\Crypto-Discord-Bot\img\chart.png', filename='chart.png')
+        embed.set_image(url='attachment://chart.png')
 
         embed.set_footer(text=f'{client.user.name} data by CoinGecko')
 
         await message.channel.send(file=file, embed=embed)
+
+
+    # Shows a candlestick graph 
+    if message.content.startswith('!candle'):
+
+         # Searches the 2nd word as the coin after !candle
+        try:
+            _, coin_id = message.content.split(' ', 1)
+            coin_id = coin_id.lower()
+
+        except:
+            await message.channel.send('Use "!chart coin_name" for this command.')
+
+
+        coin_names = list()
+        for coin in crypto_list:
+            coin_names.append(coin['id'])
+
+
+        # checks if coin_name is a valid coin 
+        if coin_id not in coin_names:
+            await message.channel.send(f'{coin_id} is not a valid coin')
+            return
+
+
+        get_candle(coin_id)
+        coin_data = cg.get_coin_by_id(coin_id, localization=False, tickers=False)
+
+        coin_symbol = coin_data['symbol'].upper()
+        coin_image_url = coin_data['image']['large']
+
+        embed = discord.Embed(title=f'${coin_symbol}', color=discord.Colour.og_blurple())
+        embed.set_author(name=f'{client.user.name}', icon_url=client.user.avatar)
+        embed.set_thumbnail(url=f'{coin_image_url}')
+
+        embed.add_field(name=f'7 day candle of {coin_id}', value='', inline=True)
+
+        file = discord.File(r'D:\CS\Python\projects\Crypto-Discord-Bot\img\candle.png', filename='candle.png')
+        embed.set_image(url='attachment://candle.png')
+
+        embed.set_footer(text=f'{client.user.name} data by CoinGecko')
+        await message.channel.send(file=file, embed=embed)
+
 
 load_dotenv()
 client.run(os.getenv('TOKEN'))
