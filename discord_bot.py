@@ -127,9 +127,11 @@ async def on_message(message):
 
     if message.content.startswith('!help'):
         await message.channel.send(
-'''!chart "coin_name" shows current price and more about that coin.
-!list shows the top 10 coins.
-!swap "# coin1_name coin2_name shows the price conversion between the two coins''')
+'''Presents current data and a 7-day price chart for a chosen cryptocurrency. Ex: "!chart Ethereum"
+!list Displays the top 100 valid cryptocurrencies.
+!swap Displays price conversion of a given price of a coin to another. Ex: "!swap 5.6 ethereum bitcoin".
+!candle Shows a candlestick chart for a selected cryptocurrency. Ex: "!candle Ethereum".
+''')
 
 
     if message.content.startswith('!about'):
